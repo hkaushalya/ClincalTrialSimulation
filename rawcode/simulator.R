@@ -36,17 +36,25 @@ RandomGroup<-function(sampleSize, pop) {
 #### Patient Drop Out Simulator
 Dropout <- function()
 {
+  # Need some prob for a 1 patiend drop out and adds that for 3 patient or 5
   # How do we make this random
   #lambda <- 1
   #p <- dpois(1, lambda)
   
   drop_prob <- runif(1)
   print(paste0("drop_prob=", drop_prob))
-  if (drop_prob>0.8)  {
-    return TRUE
+  if (drop_prob>0.6)  {
+    return (TRUE)
   } else {
-    return FALSE
+    return (FALSE)
   }
+}
+
+
+DoseRespose <- function(dose, patients_vec) {
+  erf <- function(x) 2 * pnorm(x * sqrt(2)) -1  # look under dnorm in help
+  x<-seq(0,1,0.0001)
+  return (erf(sample(x,1)))
 }
 
 Simulate<- function(Npat, doseLevels)
@@ -67,10 +75,10 @@ Simulate<- function(Npat, doseLevels)
     Npat <- setdiff(Npat, grp)
     
     #simulate drop outs with very low prob
-    if (Dropout) {
+    if (Dropout()) {
       grp_plus <- RandomGroup(gSAMPLE_SIZE, Npat)
       Npat <- setdiff(Npat, grp_plus)
-      grp <- grp[1:(length(g)-1)]  # drop the last patiend in this list for now
+      grp <- grp[1:(length(grp)-1)]  # drop the last patiend in this list for now
       grp <- c(grp, grp_plus)       # new list of patients taking the current dose
       print(paste0("A patient drops out simulated."))
     }
@@ -90,7 +98,7 @@ Simulate<- function(Npat, doseLevels)
       }
       print("\n")
       print (paste0("DLT Reached@MTD/DLT:", MTD, "/",DLT))
-      return (DLT) 
+      return (DLT)
     
       } else {
         MTD <- doseLevels[dl]
@@ -99,8 +107,7 @@ Simulate<- function(Npat, doseLevels)
   
   # If no DLT reached in the loop, means no DLT condition found
   print("No DLT conditions found! Last dose tested was:")
-  print(paste0("MTD=", MTD, " DLT=", DLT))
-  
+  print(paste0("MTD=", MTD, " DLT=", DLT))  
 }
 
 ################### Main Routine
